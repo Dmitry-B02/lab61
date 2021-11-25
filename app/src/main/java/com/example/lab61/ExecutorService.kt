@@ -1,6 +1,7 @@
 package com.example.lab61
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.util.concurrent.ExecutorService
@@ -19,11 +20,13 @@ class ExecutorService : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        Log.d("mainActivity", "OnStart: seconds = $secondsElapsed")
         startBgThread()
     }
 
     override fun onStop() {
         executor.shutdown()
+        Log.d("mainActivity", "OnStop: seconds = $secondsElapsed")
         super.onStop()
     }
 
@@ -49,6 +52,7 @@ class ExecutorService : AppCompatActivity() {
         executor = Executors.newFixedThreadPool(1)
         executor.execute {
             while(!executor.isShutdown) {
+                Log.d("mainActivity", "${Thread.currentThread()} is iterating")
                 Thread.sleep(1000)
                 textSecondsElapsed.post {
                     textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed++)
