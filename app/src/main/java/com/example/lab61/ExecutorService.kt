@@ -1,27 +1,41 @@
 package com.example.lab61
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 class ExecutorService : AppCompatActivity() {
     var secondsElapsed: Int = 0
     lateinit var textSecondsElapsed: TextView
     private lateinit var executor: ExecutorService
+    private lateinit var handler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        handler = Handler(Looper.getMainLooper())
         textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
     }
 
     override fun onStart() {
         super.onStart()
+        val app = App()
+        executor = app.executor
+        executor.execute(object: Runnable {
+            override fun run() {
+                if (!executor.isShutdown) {
+                    textSecondsElapsed.post {
+                        textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed++)
+                    }
+                    handler.postDelayed(this, 1000)
+                }
+            }
+        })
         Log.d("mainActivity", "OnStart: seconds = $secondsElapsed")
-        startBgThread()
     }
 
     override fun onStop() {
@@ -45,19 +59,6 @@ class ExecutorService : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         savedInstanceState.run {
             secondsElapsed = SECS
-        }
-    }
-
-    private fun startBgThread() {
-        executor = Executors.newFixedThreadPool(1)
-        executor.execute {
-            while(!executor.isShutdown) {
-                Log.d("mainActivity", "${Thread.currentThread()} is iterating")
-                Thread.sleep(1000)
-                textSecondsElapsed.post {
-                    textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed++)
-                }
-            }
         }
     }
 }
