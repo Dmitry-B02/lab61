@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 
 class Coroutines: AppCompatActivity() {
 
-    var secondsElapsed: Int = 0
-    lateinit var textSecondsElapsed: TextView
+    private var secondsElapsed: Int = 0
+    private lateinit var textSecondsElapsed: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
