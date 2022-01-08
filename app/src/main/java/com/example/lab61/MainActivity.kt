@@ -6,7 +6,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    var secondsElapsed: Int = 0
+
+    var secondsElapsed = 0
     lateinit var textSecondsElapsed: TextView
     private lateinit var bgThread: Thread
 
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d("mainActivity", "${Thread.currentThread()} is iterating")
                 try {
                     Thread.sleep(1000)
-                    textSecondsElapsed.post {
+                    runOnUiThread {
                         textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed++)
                     }
                 } catch (e: InterruptedException) {
