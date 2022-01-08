@@ -7,13 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class Coroutines: AppCompatActivity() {
-
-    private var secondsElapsed: Int = 0
+    private var secondsElapsed = 0
     private lateinit var textSecondsElapsed: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,14 +19,13 @@ class Coroutines: AppCompatActivity() {
         textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
         Log.d("mainActivity", "OnStart: seconds = $secondsElapsed")
 
-
         lifecycleScope.launch {
             Log.d("mainActivity", "Coroutine is launched")
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (isActive) {
-                    Log.d("mainActivity", "Coroutine works")
                     delay(1000)
-                    textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed++)
+                    secondsElapsed++
+                    textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed)
                 }
             }
         }
@@ -48,10 +44,10 @@ class Coroutines: AppCompatActivity() {
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        Log.d("mainActivity", "OnStart: seconds = $secondsElapsed")
         super.onRestoreInstanceState(savedInstanceState)
         savedInstanceState.run {
             secondsElapsed = SECS
         }
+        Log.d("mainActivity", "OnStart: seconds = $secondsElapsed")
     }
 }

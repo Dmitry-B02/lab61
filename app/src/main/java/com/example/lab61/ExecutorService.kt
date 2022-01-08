@@ -7,16 +7,19 @@ import androidx.appcompat.app.AppCompatActivity
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
-class ExecutorService : AppCompatActivity() {
-    var secondsElapsed: Int = 0
-    lateinit var textSecondsElapsed: TextView
+class ExecutorService: AppCompatActivity() {
+    private var secondsElapsed = 0
+    private lateinit var textSecondsElapsed: TextView
     private lateinit var future: Future<*>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
+    }
+
+    companion object {
+        var SECS = 0
     }
 
     override fun onStart() {
@@ -29,10 +32,6 @@ class ExecutorService : AppCompatActivity() {
         Log.d("mainActivity", "OnStop: seconds = $secondsElapsed")
         future.cancel(true)
         super.onStop()
-    }
-
-    companion object {
-        var SECS = 0
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -49,11 +48,13 @@ class ExecutorService : AppCompatActivity() {
         }
     }
 
-    private fun runExecutor(executorService: ExecutorService) = executorService.submit {
-        while (true) {
-            Thread.sleep(1000)
-            textSecondsElapsed.post {
-                textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed++)
+    private fun runExecutor(executorService: ExecutorService): Future<*> {
+        return executorService.submit {
+            while (true) {
+                Thread.sleep(1000)
+                runOnUiThread {
+                    textSecondsElapsed.text = getString(R.string.main_str, secondsElapsed++)
+                }
             }
         }
     }
